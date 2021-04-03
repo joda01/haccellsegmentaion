@@ -1,0 +1,49 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
+// https://github.com/microsoft/vscode-dev-containers/tree/master/containers/docker-existing-dockerfile
+{
+	"name": "ai",
+
+	//"image": "pytorch/pytorch",
+	"dockerFile": "../Dockerfile",
+	"build": { "target": "gputrain" },
+	// Sets the run context to one level up instead of the .devcontainer folder.
+	"context": "..",
+
+	// Our linux base image creates a devel user
+	//"remoteUser": "devel",
+
+    // debugging script outputs can be enabled by changing IMAGE_DEBUG to true
+	"runArgs": [
+		"--volume=${localWorkspaceFolder}:/workspace:z",
+		"-e=IMAGE_DEBUG=false",
+		"--network=host",
+		"--gpus=all"
+	],
+
+	// Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-in-docker for details.
+	//"mounts": [ "source=.,target=/workspace,type=bind" ],
+
+	// We must set workspace mount to null, as we manualy mount the workspace using the volume argument inside the runArgs
+	"workspaceMount": null,
+	"workspaceFolder": "/workspace",
+
+	// Use 'settings' to set *default* container specific settings.json values on container create.
+	// You can edit these settings after create using File > Preferences > Settings > Remote.
+	"settings": {
+		// We must set the entrypoint here as otherwise the proxy won't be set
+	//	"terminal.integrated.shell.linux": "/fronius/entrypoint.sh"
+	},
+
+	// Use 'appPort' to create a container with published ports. If the port isn't working, be sure
+	// your server accepts connections from all interfaces (0.0.0.0 or '*'), not just localhost.
+	//"appPort": [10000,"10000"],
+
+	// Uncomment the next line to run commands after the container is created - for example installing git.
+	 //"postCreateCommand": [" mkdir -p ./~/.vscode-server/extensions", "cp -r /root/.vscode-server/extensions ./~/.vscode-server/extensions"],
+
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"ms-vscode.cpptools",
+		"ms-vscode.cmake-tools"
+	]
+}
