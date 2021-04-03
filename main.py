@@ -196,12 +196,8 @@ def predictimg(weightsfilename, picture):
     model = torch.load(weightsfilename)
     model.eval()
     pre = model.forward(tenso)
-    print(pre)
-
-    save_image(pre[0]['masks'],"mask.png")
-    save_image(pre[1]['masks'],"mask1.png")
-    save_image(pre[2]['masks'],"mask2.png")
-
+    #print(pre)
+    #save_image(pre[0]['masks'],"mask.png")
     getOutputimage(pre,picture)
 
 
