@@ -4,6 +4,11 @@
 import os
 import numpy as np
 import torch
+import cv2
+import random
+
+
+
 from PIL import Image
 
 from torchvision.utils import save_image
@@ -188,7 +193,7 @@ def predictimg(weightsfilename, picture):
     img = Image.open(picture).convert("RGB")
     tenso = transform(img).unsqueeze(1).type(torch.FloatTensor)
 
-    model = torch.load('model.pth')
+    model = torch.load(weightsfilename)
     model.eval()
     pre = model.forward(tenso)
     print(pre)
@@ -197,10 +202,59 @@ def predictimg(weightsfilename, picture):
     save_image(pre[1]['masks'],"mask1.png")
     save_image(pre[2]['masks'],"mask2.png")
 
+    getOutputimage(pre,picture)
+
+
+
+
+def random_colour_masks(image):
+    colours = [[0, 255, 0],[0, 0, 255],[255, 0, 0],[0, 255, 255],[255, 255, 0],[255, 0, 255],[80, 70, 180],[250, 80, 190],[245, 145, 50],[70, 150, 250],[50, 190, 190]]
+    r = np.zeros_like(image).astype(np.uint8)
+    g = np.zeros_like(image).astype(np.uint8)
+    b = np.zeros_like(image).astype(np.uint8)
+    r[image == 1], g[image == 1], b[image == 1] = colours[random.randrange(0,10)]
+    coloured_mask = np.stack([r, g, b], axis=2)
+    return coloured_mask   
+
+def getOutputimage(output, img_path):
+    
+    boxes = output[0]["boxes"]
+    labels = output[0]["labels"]
+    scores = output[0]["scores"]
+    masks = (output[0]['masks']>0.5).squeeze().detach().cpu().numpy()
+        
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+    for i in range(len(masks)):
+        rgb_mask = random_colour_masks(masks[i])
+    
+        #convert mask to grayscale (optimise to directly convert mask to grayscale without first convertingit to color)
+        gray_mask = cv2.cvtColor(rgb_mask, cv2.COLOR_RGB2GRAY)
+        
+        # Find contours:
+        contours, hierarchy = cv2.findContours(gray_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        
+        # Draw contours:
+        cv2.drawContours(img, contours, -1, (0, 255, 0),2)
+        
+        overlay = img.copy()
+        cv2.fillPoly(overlay,pts=contours,color=(0,255,0))
+
+        alpha = 0.4  # Transparency factor.
+        img = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
+    
+    #plt.imshow(img)
+
+    im = Image.fromarray(img)
+    im.save("your_file.jpeg")
+
+    #save_image(img,"result.png")
 
 #
 # Main 
 #
 if __name__ == "__main__":
    #main('hac_model.pth')
-   predictimg('hac_model.pth',"Image/FudanPed00001.png")
+   predictimg('modells/model.pth',"PennFudanPed/PNGImages/FudanPed00005.png")
+

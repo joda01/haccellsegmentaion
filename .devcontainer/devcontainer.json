@@ -5,7 +5,7 @@
 
 	//"image": "pytorch/pytorch",
 	"dockerFile": "../Dockerfile",
-	"build": { "target": "gputrain" },
+	"build": { "target": "cputrain" },
 	// Sets the run context to one level up instead of the .devcontainer folder.
 	"context": "..",
 
@@ -16,8 +16,8 @@
 	"runArgs": [
 		"--volume=${localWorkspaceFolder}:/workspace:z",
 		"-e=IMAGE_DEBUG=false",
-		"--network=host",
-		"--gpus=all"
+		"--network=host"
+	//	"--gpus=all"
 	],
 
 	// Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-in-docker for details.
