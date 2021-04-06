@@ -127,7 +127,7 @@ def get_transform(train):
 #
 # Train a new model
 #
-def train(weightsfilename):
+def train(weightsfilename,trainingData):
     # train on the GPU or on the CPU, if a GPU is not available
     #device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     device = torch.device('cpu')
@@ -135,8 +135,8 @@ def train(weightsfilename):
     # our dataset has two classes only - background and person
     num_classes = 2
     # use our dataset and defined transformations
-    dataset = PennFudanDataset('PennFudanPed', get_transform(train=True))
-    dataset_test = PennFudanDataset('PennFudanPed', get_transform(train=False))
+    dataset = PennFudanDataset(trainingData, get_transform(train=True))
+    dataset_test = PennFudanDataset(trainingData, get_transform(train=False))
 
     # split the dataset in train and test set
     indices = torch.randperm(len(dataset)).tolist()
@@ -168,7 +168,7 @@ def train(weightsfilename):
                                                    gamma=0.1)
 
     # let's train it for 10 epochs
-    num_epochs = 2
+    num_epochs = 5
 
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
@@ -237,7 +237,7 @@ def getOutputimage(output, img_path):
         overlay = img.copy()
         cv2.fillPoly(overlay,pts=contours,color=(0,255,0))
 
-        alpha = 0.4  # Transparency factor.
+        alpha = 0.8  # Transparency factor.
         img = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
     
     #plt.imshow(img)
@@ -251,6 +251,6 @@ def getOutputimage(output, img_path):
 # Main 
 #
 if __name__ == "__main__":
-   #main('hac_model.pth')
-   predictimg('modells/model.pth',"PennFudanPed/PNGImages/FudanPed00005.png")
+   #train('modells/hac_model.pth','HacTraining')
+   predictimg('modells/hac_model.pth',"HacTraining/PNGImages/img_010.png")
 
