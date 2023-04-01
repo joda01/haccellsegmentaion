@@ -1,3 +1,6 @@
+> Please see my follow up project [open-bio-image-processor](https://github.com/joda01/open-bio-image-processor)
+
+
 # HEC cell segmentation
 
 The goal of the project is to train a AI with microscope pictures showing HAC cells.
